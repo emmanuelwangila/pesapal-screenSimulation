@@ -40,7 +40,9 @@ def screenSimulation(screen , byteStream):
         # drawing the character
         x , y , char , color = byteStream[index:index + 4]
         index+=4;
+        # check if within bounds 
         if 0 <= x < screenWidth and 0 <= y < screenHight:
+            # add characters to position
             screen.addstr(x , y , char , color);  
 
           
