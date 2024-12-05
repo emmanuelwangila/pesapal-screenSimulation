@@ -29,5 +29,23 @@ def screenSimulation(screen , byteStream):
         index+=3;
         setUpDone = True;
         screen.clear();  
+    # Initialize drawing the characters 
+    elif instruction == 0X2 and setUpDone:
+        # reads the length byte
+        length = byteStream[index];
+        index+=1
+        # validations for the character
+        if length != 4:
+            continue
+        # drawing the character
+        x , y , char , color = byteStream[index:index + 4]
+        index+=4;
+        if 0 <= x < screenWidth and 0 <= y < screenHight:
+            screen.addstr(x , y , char , color);  
 
-       
+          
+
+
+
+
+      
