@@ -30,7 +30,7 @@ def screenSimulation(screen , byteStream):
         setUpDone = True;
         screen.clear();  
     # Initialize drawing the characters 
-    elif instruction == 0X2 and setUpDone:
+    elif instruction == 0x2 and setUpDone:
         # reads the length byte
         length = byteStream[index];
         index+=1
@@ -55,20 +55,41 @@ def screenSimulation(screen , byteStream):
         x1 , y1 , x2 , y2 , color, char = byteStream[index:index + 6]
         index+=6;
         # Brensenham's line algorithm 
+        # difference between cordinates 
         dx = (x1 - x2)
         dy = (y1 - y2)
+        # step directio dtermination 
         sx = 1 if x1 < x2 else -1 
         sy = 1 if y1 < y2 else -1
+        #  initilize error factor
         err = dx -dy 
+        # draw the line using a loop
         while True :
             if 0 <= x1 < screenWidth and 0 <= y1 < screenHight :
                 screen.addstr(x1 , y1 , char)
             if x1 == x2 and y1 == y2:
                 break 
+            # update cordinates 
             e2 = err * 2 
             if e2 > -dy :
                 err -= dy
                 x1 += sx
+            if e2 < dx :
+                err += dx;
+                y1 += sy;   
+    elif instruction == 0x4 and setUpDone:
+        # reads length byte
+        length = byteStream[index]
+        index+=1
+        # validations for the clear screen
+        if length < 3 :
+            continue 
+        x , y , color = byteStream[index + 3: index + 3 + length - 3 ]
+        index+= length;
+        if 0 <= x < screenWidth and 0 <= y and screenHight :
+            for idx char in enumerate(text):
+                
+
 
  
 
