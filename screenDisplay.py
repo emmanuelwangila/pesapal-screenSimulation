@@ -44,6 +44,18 @@ def screenSimulation(screen , byteStream):
         if 0 <= x < screenWidth and 0 <= y < screenHight:
             # add characters to position
             screen.addstr(x , y , char , color);  
+    # Initialize moving cursor , drawing the line
+    elif instruction == 0x3 and setUpDone:
+        # check the byte length
+        length = byteStream[index]
+        index+=1
+        # validations
+        if length !=6 :
+            continue
+        x1 , y1 , x2 , y2 , color, char = byteStream[index:index + 6]
+        index+=6;
+        # Bresenh's line algorithm 
+ 
 
           
 
