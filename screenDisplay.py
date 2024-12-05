@@ -54,7 +54,22 @@ def screenSimulation(screen , byteStream):
             continue
         x1 , y1 , x2 , y2 , color, char = byteStream[index:index + 6]
         index+=6;
-        # Bresenh's line algorithm 
+        # Brensenham's line algorithm 
+        dx = (x1 - x2)
+        dy = (y1 - y2)
+        sx = 1 if x1 < x2 else -1 
+        sy = 1 if y1 < y2 else -1
+        err = dx -dy 
+        while True :
+            if 0 <= x1 < screenWidth and 0 <= y1 < screenHight :
+                screen.addstr(x1 , y1 , char)
+            if x1 == x2 and y1 == y2:
+                break 
+            e2 = err * 2 
+            if e2 > -dy :
+                err -= dy
+                x1 += sx
+
  
 
           
