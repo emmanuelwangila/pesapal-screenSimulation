@@ -4,7 +4,7 @@ def screenSimulation(screen, byteStream):
     print("Screen Simulation");
     setUpDone = False
     cursorX, cursorY = 0, 0
-    screenWidth, screenHight, screenColor = 0, 0, 0
+    screenWidth, screenHeight, screenColor = 0, 0, 0
 
     # Setup curses environment
     curses.curs_set(0)  # Hide cursor
@@ -23,7 +23,7 @@ def screenSimulation(screen, byteStream):
             if length != 3:
                 continue
             screenWidth = byteStream[index]
-            screenHight = byteStream[index + 1]
+            screenHeight = byteStream[index + 1]
             screenColor = byteStream[index + 2]
             index += 3
             setUpDone = True
@@ -37,7 +37,7 @@ def screenSimulation(screen, byteStream):
                 continue
             x, y, char, color = byteStream[index:index + 4]
             index += 4
-            if 0 <= x < screenWidth and 0 <= y < screenHight:
+            if 0 <= x < screenWidth and 0 <= y < screenHeight:
                 screen.addch(y, x, chr(char), curses.color_pair(color))
 
         # Draw a line
@@ -54,7 +54,7 @@ def screenSimulation(screen, byteStream):
             sy = 1 if y1 < y2 else -1
             err = dx - dy
             while True:
-                if 0 <= x1 < screenWidth and 0 <= y1 < screenHight:
+                if 0 <= x1 < screenWidth and 0 <= y1 < screenHeight:
                     screen.addch(y1, x1, chr(char), curses.color_pair(color))
                 if x1 == x2 and y1 == y2:
                     break
@@ -76,7 +76,7 @@ def screenSimulation(screen, byteStream):
             text = byteStream[index + 3:index + 3 + length - 3]
             index += length
             for idx, char in enumerate(text):
-                if 0 <= x + idx < screenWidth and 0 <= y < screenHight:
+                if 0 <= x + idx < screenWidth and 0 <= y < screenHeight:
                     screen.addch(y, x + idx, chr(char), curses.color_pair(color))
 
         # Move cursor
@@ -87,7 +87,7 @@ def screenSimulation(screen, byteStream):
                 continue
             cursorX, cursorY = byteStream[index:index + 2]
             index += 2
-            if 0 <= cursorX < screenWidth and 0 <= cursorY < screenHight:
+            if 0 <= cursorX < screenWidth and 0 <= cursorY < screenHeight:
                 # Corrected cursor move
                 screen.move(cursorY, cursorX)
                 screen.refresh()
@@ -100,7 +100,7 @@ def screenSimulation(screen, byteStream):
                 continue
             char, color = byteStream[index:index + 2]
             index += 2
-            if 0 <= cursorX < screenWidth and 0 <= cursorY < screenHight:
+            if 0 <= cursorX < screenWidth and 0 <= cursorY < screenHeight:
                 screen.addch(cursorY, cursorX, chr(char), curses.color_pair(color))
                 screen.refresh()
 
@@ -123,7 +123,7 @@ def screenSimulation(screen, byteStream):
     screen.refresh()
 
 def main():
-    byte_stream = [
+    byteStream = [
         0x1, 3, 80, 24, 1,          # Screen setup: 80x24, Color = 1
         0x2, 4, 10, 5, ord('A'), 2, # Draw 'A' at (10, 5) with color 2
         0x3, 6, 2, 2, 15, 5, 3, ord('*'), # Draw line from (2, 2) to (15, 5)
@@ -133,7 +133,8 @@ def main():
         0x7, 0,                     # Clear the screen
         0xFF                        # End of file
     ]
-    curses.wrapper(lambda scr: screenSimulation(scr, byte_stream))
+    curses.wrapper(lambda scr: screenSimulation(scr, byteStream))
 
 if __name__ == "__main__":
     main()
+
