@@ -71,6 +71,49 @@ def handle_command(stdscr, command_byte, data):
 
 # Function to process the byte stream
 def process_byte_stream(stdscr, byte_stream):
+    i = 0
+    while i < len(byte_stream):  # Only one while loop is needed
+        try:
+            command_byte = byte_stream[i]
+            length_byte = byte_stream[i + 1]
+            data_start = i + 2
+            data_end = data_start + length_byte
+            data = byte_stream[data_start:data_end]
+
+            if length_byte < 0:
+                raise ValueError("Invalid length: Length cannot be negative.")
+            if len(data) != length_byte:
+                raise ValueError(f"Data length mismatch: Expected {length_byte}, got {len(data)}")
+
+            handle_command(stdscr, command_byte, data)
+            i = data_end
+
+        except (IndexError, ValueError) as e:
+            print(f"Error at byte index {i}: {e}. Skipping to the next command.")
+            i += 2
+
+def main(stdscr):
+    # call the man function to execute on the terminal
+    i = 0
+    while i < len(byte_stream):
+        try:
+            command_byte = byte_stream[i]
+            length_byte = byte_stream[i + 1]
+            data_start = i + 2
+            data_end = data_start + length_byte
+            data = byte_stream[data_start:data_end]
+
+            if length_byte < 0:
+                raise ValueError("Invalid length: Length cannot be negative.")
+            if len(data) != length_byte:
+                raise ValueError(f"Data length mismatch: Expected {length_byte}, got {len(data)}")
+
+            handle_command(stdscr, command_byte, data)
+            i = data_end  # Correctly advance the index
+
+        except (IndexError, ValueError) as e:
+            print(f"Error at byte index {i}: {e}. Skipping to the next command.")
+            i += 2  # Skip the faulty command and length byte
     i = 0  # Start index for reading the byte stream
     while i < len(byte_stream):  # Loop through the byte stream
         try:
@@ -95,20 +138,20 @@ def process_byte_stream(stdscr, byte_stream):
             i += 2  # Skip the faulty command and length byte
 
 # Main function to run the program using curses
-def main(stdscr):
+
     max_y, max_x = stdscr.getmaxyx()  # Get the terminal size
     print(f"Terminal size: {max_x}x{max_y}")  # Print terminal dimensions (for debugging)
 
     # Define a byte stream with a series of commands
     byte_stream = [
-        0x1, 3, 80, 25, 0,  # Screen setup (Width=80, Height=25, Color Mode=0x00)
-        0x2, 4, 1, 1, 0, 65,  # Draw 'A' at (1, 1) with color index 0
-        0x2, 4, 2, 1, 0, 42,  # Draw '*' at (2, 1) with color index 0
-        0x4, 9, 1, 2, 0, 72, 101, 108, 108, 111,  # Render "Hello" at (1, 2) with color index 0
-        0x3, 6, 1, 3, 5, 3, 0, 45,  # Draw line from (1, 3) to (5, 3) with '-' and color index 0
-        0x06, 2, 64, 1,  # Draw '@' (ASCII 64) at the cursor position
-        0x05, 2, 2, 25,  # Move cursor to (2, 25)
-        0xFF  # End of file (EOF)
+          0x1, 3, 80, 24, 1,          # Screen setup: 80x24, Color = 1
+    0x2, 4, 10, 5, 2, ord('A'), # Draw 'A' at (10, 5) with color 2 (Corrected)
+    0x3, 6, 2, 2, 15, 5, 3, ord('*'), # Draw line from (2, 2) to (15, 5) with color 3 (Corrected)
+    0x4, 8, 15, 10, 4, ord('H'), ord('e'), ord('l'), ord('l'), ord('o'), # Render "Hello" (Corrected length)
+    0x5, 2, 40, 12,             # Move cursor to (40, 12)
+    0x6, 2, ord('B'), 5,        # Draw 'B' at cursor position
+    0x7, 0,                     # Clear the screen (Corrected Length)
+    0xFF, 0                      # End of file (Corrected, No length expected)
     ]
 
     # Process the byte stream
@@ -120,6 +163,24 @@ def main(stdscr):
     # Wait for a key press before exiting
     stdscr.getch()
 
-# Run the main function with curses wrapper to set up terminal environment
+def main(stdscr):
+    max_y, max_x = stdscr.getmaxyx()
+    print(f"Terminal size: {max_x}x{max_y}")
+
+    byte_stream = [
+        0x1, 3, 80, 24, 1,          # Screen setup: 80x24, Color = 1
+        0x2, 4, 10, 5, 2, ord('A'), # Draw 'A' at (10, 5) with color 2
+        0x3, 6, 2, 2, 15, 5, 3, ord('*'), # Draw line from (2, 2) to (15, 5) 
+        0x4, 8, 15, 10, 4, ord('H'), ord('e'), ord('l'), ord('l'), ord('o'), # Render "Hello"
+        0x5, 2, 40, 12,             # Move cursor to (40, 12)
+        0x6, 2, ord('B'), 5,        # Draw 'B' at cursor position
+        # 0x7, 0,                     # Remove or comment out the Clear Screen command!
+        0xFF, 0                      # End of file
+    ]
+
+    process_byte_stream(stdscr, byte_stream)
+    time.sleep(2)
+    stdscr.getch()
+
 if __name__ == "__main__":
     curses.wrapper(main)

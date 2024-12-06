@@ -124,14 +124,14 @@ def screenSimulation(screen, byteStream):
 
 def main():
     byteStream = [
-        0x1, 3, 80, 24, 1,          # Screen setup: 80x24, Color = 1
-        0x2, 4, 10, 5, ord('A'), 2, # Draw 'A' at (10, 5) with color 2
-        0x3, 6, 2, 2, 15, 5, 3, ord('*'), # Draw line from (2, 2) to (15, 5)
-        0x4, 8, 15, 10, 4, ord('H'), ord('e'), ord('l'), ord('l'), ord('o'), # Render "Hello"
-        0x5, 2, 40, 12,             # Move cursor to (40, 12)
-        0x6, 2, ord('B'), 5,        # Draw 'B' at cursor position
-        0x7, 0,                     # Clear the screen
-        0xFF                        # End of file
+    0x1, 3, 80, 24, 1,          # Screen setup: 80x24, Color = 1
+    0x2, 4, 10, 5, 2, ord('A'), # Draw 'A' at (10, 5) with color 2 (Corrected)
+    0x3, 6, 2, 2, 15, 5, 3, ord('*'), # Draw line from (2, 2) to (15, 5) with color 3 (Corrected)
+    0x4, 8, 15, 10, 4, ord('H'), ord('e'), ord('l'), ord('l'), ord('o'), # Render "Hello" (Corrected length)
+    0x5, 2, 40, 12,             # Move cursor to (40, 12)
+    0x6, 2, ord('B'), 5,        # Draw 'B' at cursor position
+    0x7, 0,                     # Clear the screen (Corrected Length)
+    0xFF, 0                      # End of file (Corrected, No length expected)
     ]
     curses.wrapper(lambda scr: screenSimulation(scr, byteStream))
 
