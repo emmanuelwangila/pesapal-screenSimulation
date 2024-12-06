@@ -164,6 +164,7 @@ def main(stdscr):
     stdscr.getch()
 
 def main(stdscr):
+    # finalize the program
     max_y, max_x = stdscr.getmaxyx()
     print(f"Terminal size: {max_x}x{max_y}")
 
