@@ -72,25 +72,25 @@ def handle_command(stdscr, command_byte, data):
 # Function to process the byte stream
 def process_byte_stream(stdscr, byte_stream):
     i = 0
-    while i < len(byte_stream):  # Only one while loop is needed
+    while i < len(byte_stream):  # Loop through the byte stream
         try:
-            command_byte = byte_stream[i]
-            length_byte = byte_stream[i + 1]
-            data_start = i + 2
-            data_end = data_start + length_byte
-            data = byte_stream[data_start:data_end]
+            command_byte = byte_stream[i]  # Extract the command byte at index i
+            length_byte = byte_stream[i + 1]  # Extract the length byte at index i+1
+            data_start = i + 2  # Data starts after the command and length bytes
+            data_end = data_start + length_byte  # Data ends after length bytes
+            data = byte_stream[data_start:data_end]  # Slice the byte stream to get the data
 
-            if length_byte < 0:
+            if length_byte < 0:  # Ensure the length byte is not negative
                 raise ValueError("Invalid length: Length cannot be negative.")
-            if len(data) != length_byte:
+            if len(data) != length_byte:  # Check if the actual data length matches the expected length
                 raise ValueError(f"Data length mismatch: Expected {length_byte}, got {len(data)}")
 
-            handle_command(stdscr, command_byte, data)
-            i = data_end
+            handle_command(stdscr, command_byte, data)  # Process the command with the data
+            i = data_end  # Move the index to the next command
 
-        except (IndexError, ValueError) as e:
-            print(f"Error at byte index {i}: {e}. Skipping to the next command.")
-            i += 2
+        except (IndexError, ValueError) as e:  # Handle errors such as index out of range or mismatched lengths
+            print(f"Error at byte index {i}: {e}. Skipping to the next command.")  # Print error and skip to next command
+            i += 2  # Move the index to the next command (skip the current one)
 
 def main(stdscr):
     # call the man function to execute on the terminal
